@@ -71,7 +71,7 @@ WHERE id=9;
 -- HIỂN THỊ DANH SÁCH GIẢNG VIÊN, DANH SÁCH KHÓA HỌC
 SELECT courses.*, teachers.name AS teacher_name
 FROM teachers 
-FULL JOIN courses 
+INNER JOIN courses 
 ON courses.teacher_id=teachers.id;
 
 
