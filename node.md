@@ -174,7 +174,7 @@ table author_book: author_id, book_id ==> books.id, author_id ==> authors.id (g�
 + set default: theo giá trị set up sẵn
 
 ## NỐI BẢNG: CÓ 4 HÌNH THỨC
-1. INNER JOIN: trả về những thằng giao với nhau:
+1. INNER JOIN: trả về những thằng giao với nhau: khóa ngoại liên kết tới cái nào thì trả về cái đó
 SELECT users.*, phones.value AS phone_number
 FROM users 
 INNER JOIN phones 
@@ -188,4 +188,7 @@ NOTE:
 TIP: chuyển sang LEFT JOIN nếu muốn vẫn hiển thị dữ liệu không giao với bảng kia
 (ưu tiên hiển thị bên trái, RIGHT JOIN ưu tiên hiển thị bên phải)
 
+2. LEFT JOIN: trước join là bên trái
+3. RIGHT JOIN: sau join là bên phải, sau ON là điều kiện
+4. FULL JOIN
 

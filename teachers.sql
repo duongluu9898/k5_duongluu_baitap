@@ -36,7 +36,7 @@ UPDATE teachers SET bio='age 52, female, medium'
 WHERE id=3;
 
 -- HIỂN THỊ DANH SÁCH GIẢNG VIÊN, DANH SÁCH KHÓA HỌC
-SELECT teachers.*, courses.name AS course_name
+SELECT courses.*, courses.name AS course_name
 FROM courses 
 INNER JOIN teachers 
-ON teachers.id=courses.teacher_id
+ON courses.teacher_id=teachers.id
