@@ -67,3 +67,11 @@ UPDATE courses SET name='nextjs_update', price=10
 WHERE id=8;
 UPDATE courses SET name='express_update', price=11
 WHERE id=9;
+
+-- HIỂN THỊ DANH SÁCH GIẢNG VIÊN, DANH SÁCH KHÓA HỌC
+SELECT courses.*, teachers.name AS teacher_name
+FROM teachers 
+FULL JOIN courses 
+ON courses.teacher_id=teachers.id;
+
+
