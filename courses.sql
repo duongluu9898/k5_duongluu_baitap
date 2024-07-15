@@ -72,6 +72,7 @@ WHERE id=9;
 SELECT courses.*, teachers.name AS teacher_name
 FROM teachers 
 INNER JOIN courses 
-ON courses.teacher_id=teachers.id;
+ON courses.teacher_id=teachers.id
+WHERE LOWER(teachers.name) LIKE LOWER('%C%')
 
 

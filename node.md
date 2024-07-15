@@ -94,7 +94,7 @@ SELECT * FROM users ORDER BY name DESC,id DESC (ưu tiên săp xếp name trư�
 6. LIMIT: GIỚI HẠN
 SELECT * FROM users LIMIT 4 (chỉ hiển thị 4)
 
-7. OFFSET: BỎ ĐI MẤY CÁI: mặc định là 0
+7. OFFSET: BỎ ĐI MẤY CÁI: mặc định là 0: GIỚ HẠN
 SELECT * FROM users OFFSET 4 (BỎ hiển thị 4)
 
 8. JOIN
@@ -192,3 +192,38 @@ TIP: chuyển sang LEFT JOIN nếu muốn vẫn hiển thị dữ liệu không 
 3. RIGHT JOIN: sau join là bên phải, sau ON là điều kiện
 4. FULL JOIN
 
+TIP: tìm teache có name là C
+SELECT courses.*, teachers.name AS teacher_name
+FROM teachers 
+INNER JOIN courses 
+ON courses.teacher_id=teachers.id
+WHERE LOWER(teachers.name) LIKE LOWER('%C%')
+
+# HÀM TỔNG HỢP: COUNT, SUM, AVG, MAX, MIN
+1. COUNT: ĐẾM SỐ hàng, số bản ghi (thường đếm theo id)
+Ví dụ:
+SELECT count(id) FROM users;
+(đếm số id trong bảng users)
+
+SELECT count(id) FROM users GROUP BY status;
+(nhóm các status và trả về số id đếm được)
+
+
+2. AVG: TRUNG BÌNH CỘNG
+3. SUM: LẤY TỔNG
+4. MAX: LỚN NHẤT
+5. MIN: NHỎ NHẤT
+
+==> khi dùng hàm tổng hợp thì kết hợp với mệnh đề GROUP BY, 
+==> lọc dữ liệu theo mệnh đề GROUP BY, dùng mệnh đề HAVING (HAVING chức năng giống WHERE)
+(having để filter theo group)
+
+
+
+# xóa truncate
+- truncate: xóa thông thường, gặp khóa ngoại sẽ chặn luôn
+- truncate cascade: tất cả những gì liên quan thì tự động xóa
+- truncate restart identity: có các id tự động tăng thì reset về 0
+
+# thiết lập id tự động tăng
+edit > constrain > iden > inden (chọn always)
