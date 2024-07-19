@@ -84,13 +84,13 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.dich_vu_di_kem
     OWNER to postgres;
 
--- tạo bảng khach_hang
+-- tạo bảng khach_hang 
 CREATE TABLE IF NOT EXISTS public.khach_hang
 (
     ma_khach_hang character varying COLLATE pg_catalog."default" NOT NULL,
     ten_khach_hang character varying COLLATE pg_catalog."default",
     dia_chi character varying COLLATE pg_catalog."default",
-    so_dien_thoai integer,
+    so_dien_thoai character varying COLLATE pg_catalog."default",
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     CONSTRAINT khach_hang_pkey PRIMARY KEY (ma_khach_hang)
