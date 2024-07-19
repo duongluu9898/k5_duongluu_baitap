@@ -57,7 +57,7 @@ chuột phải table chọn query tool để thực hiện truy vấn, view/edit
 INSERT INTO users(id, name, email,password, status, created_at, updated_at)
 VALUES(7, 'User 7', 'user@gmail.com',MD5('123456'), true, NOW(), NOW())
 
-dạng: INSERT INTO table(id, name,....) VALUE(7, duong luu,....)
+dạng: INSERT INTO table(id, name,....) VALUES(7, duong luu,....)
 (thêm tại bảng ... giá trị ...)
 ==> dùng nháy đơn
 ==> MD5: MÃ hóa password
@@ -81,7 +81,7 @@ SELECT id, name AS fullname, email, status FROM users;
 // dùng AS nếu muốn đổi tên cột: name AS fullname
 NOTE: AS chỉ đổi trong truy vấn
 
-- truy vấn dữ liệu tại id=1:
+- truy vấn dữ liệu tại id=3:
 SELECT id, name AS fullname, email, status FROM users WHERE id=3;
 
 5. ORDER BY: SẮP XẾP
@@ -94,7 +94,7 @@ SELECT * FROM users ORDER BY name DESC,id DESC (ưu tiên săp xếp name trư�
 6. LIMIT: GIỚI HẠN
 SELECT * FROM users LIMIT 4 (chỉ hiển thị 4)
 
-7. OFFSET: BỎ ĐI MẤY CÁI: mặc định là 0: GIỚ HẠN
+7. OFFSET: BỎ ĐI MẤY CÁI: mặc định là 0: GIỚi HẠN
 SELECT * FROM users OFFSET 4 (BỎ hiển thị 4)
 
 8. JOIN
@@ -227,3 +227,5 @@ SELECT count(id) FROM users GROUP BY status;
 
 # thiết lập id tự động tăng
 edit > constrain > iden > inden (chọn always)
+
+
