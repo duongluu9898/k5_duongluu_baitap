@@ -177,7 +177,8 @@ của những khách hàng đã từng đặt phòng karaoke có địa chỉ �
 */
 
 SELECT khach_hang.ma_khach_hang, khach_hang.ten_khach_hang,
-khach_hang.dia_chi, khach_hang.so_dien_thoai, trang_thai_dat
+khach_hang.dia_chi, khach_hang.so_dien_thoai, trang_thai_dat,
+dat_phong.created_at, dat_phong.updated_at
 FROM dat_phong
 LEFT JOIN khach_hang
 ON dat_phong.ma_khach_hang = khach_hang.ma_khach_hang
@@ -191,12 +192,13 @@ và trạng thái đặt là “Da dat”
 SELECT phong.ma_phong, phong.loai_phong,
 phong.so_khach_toi_da, phong.gia_phong_1_gio,
 dat_phong.trang_thai_dat,
-COUNT(phong.ma_phong) AS so_lan_dat
+COUNT(phong.ma_phong) AS so_lan_dat,
+dat_phong.created_at, dat_phong.updated_at
 FROM dat_phong
 LEFT JOIN phong
 ON dat_phong.ma_phong = phong.ma_phong
-WHERE dat_phong.trang_thai_dat ILIKE '%Da dat%'
-GROUP BY phong.ma_phong, dat_phong.trang_thai_dat
+GROUP BY phong.ma_phong, dat_phong.trang_thai_dat, dat_phong.created_at, dat_phong.updated_at
+HAVING dat_phong.trang_thai_dat ILIKE '%Da dat%' AND COUNT(phong.ma_phong) > 2
 
 
 
