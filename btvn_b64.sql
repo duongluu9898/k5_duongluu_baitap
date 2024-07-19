@@ -182,7 +182,7 @@ ON chi_tiet_su_dung_dich_vu.ma_dich_vu = dich_vu_di_kem.ma_dich_vu
 GROUP BY dat_phong.ma_dat_phong, phong.loai_phong,
 phong.gia_phong_1_gio, khach_hang.ten_khach_hang
 
-
+-- mình chưa hoàn thành phần tính: TongTienSuDungDichVu và TongTienThanhToan
 /*
 Câu 2: Hiển thị MaKH, TenKH, DiaChi, SoDT
 của những khách hàng đã từng đặt phòng karaoke có địa chỉ ở “Hoa xuan”
