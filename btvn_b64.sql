@@ -22,13 +22,13 @@ CREATE TABLE IF NOT EXISTS public.dat_phong
     ma_phong character varying COLLATE pg_catalog."default",
     ma_khach_hang character varying COLLATE pg_catalog."default",
     ngay_dat character varying COLLATE pg_catalog."default",
-    gio_bat_dau character varying COLLATE pg_catalog."default",
-    gio_ket_thuc character varying COLLATE pg_catalog."default",
     tien_dat_coc integer,
     ghi_chu character varying COLLATE pg_catalog."default",
     trang_thai_dat character varying COLLATE pg_catalog."default",
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
+    gio_bat_dau time without time zone,
+    gio_ket_thuc time without time zone,
     CONSTRAINT dat_phong_pkey PRIMARY KEY (ma_dat_phong),
     CONSTRAINT khach_hang_ma_khach_hang_foreign FOREIGN KEY (ma_khach_hang)
         REFERENCES public.khach_hang (ma_khach_hang) MATCH SIMPLE
@@ -159,7 +159,17 @@ TongTienThanhToan = TongTienHat + sum (TongTienSuDungDichVu)
 SELECT dat_phong.ma_phong, dat_phong.ngay_dat,
 dat_phong.gio_bat_dau, dat_phong.gio_ket_thuc,
 phong.loai_phong, phong.gia_phong_1_gio,
-khach_hang.ten_khach_hang, COUNT(dat_phong.ma_dat_phong) AS so_lan_su_dung_dich_vu
+khach_hang.ten_khach_hang,
+COUNT(dat_phong.ma_dat_phong) AS so_lan_su_dung_dich_vu,
+ROUND(
+	(phong.gia_phong_1_gio * 
+	SUM((EXTRACT(HOUR FROM(dat_phong.gio_ket_thuc) )* 60 + 
+	EXTRACT(MINUTE FROM(dat_phong.gio_ket_thuc) )- 
+	EXTRACT(HOUR FROM(dat_phong.gio_bat_dau)) * 60 - 
+	EXTRACT(MINUTE FROM(dat_phong.gio_bat_dau)))  / 60)
+	), 0
+) 
+AS tong_tien_hat
 FROM dat_phong
 LEFT JOIN phong
 ON dat_phong.ma_phong = phong.ma_phong
@@ -169,7 +179,9 @@ LEFT JOIN chi_tiet_su_dung_dich_vu
 ON dat_phong.ma_dat_phong = chi_tiet_su_dung_dich_vu.ma_dat_phong
 LEFT JOIN dich_vu_di_kem
 ON chi_tiet_su_dung_dich_vu.ma_dich_vu = dich_vu_di_kem.ma_dich_vu
-GROUP BY dat_phong.ma_dat_phong, phong.loai_phong, phong.gia_phong_1_gio, khach_hang.ten_khach_hang;
+GROUP BY dat_phong.ma_dat_phong, phong.loai_phong,
+phong.gia_phong_1_gio, khach_hang.ten_khach_hang
+
 
 /*
 Câu 2: Hiển thị MaKH, TenKH, DiaChi, SoDT
