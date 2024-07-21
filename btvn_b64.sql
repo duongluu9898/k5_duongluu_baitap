@@ -166,13 +166,14 @@ ROUND((phong.gia_phong_1_gio *
 	EXTRACT(MINUTE FROM(dat_phong.gio_bat_dau)))  / 60 )), 0
 ) AS tong_tien_hat,
 (CASE WHEN SUM(so_luong * don_gia) IS null THEN 0
-    ELSE SUM(so_luong * don_gia ) END) AS tong_tien_su_dung_dich
+    ELSE SUM(so_luong * don_gia ) END) AS tong_tien_su_dung_dich,
+dat_phong.created_at, dat_phong.updated_at
 FROM dat_phong
 LEFT JOIN phong ON dat_phong.ma_phong = phong.ma_phong
 LEFT JOIN khach_hang ON dat_phong.ma_khach_hang = khach_hang.ma_khach_hang
 LEFT JOIN chi_tiet_su_dung_dich_vu ON dat_phong.ma_dat_phong = chi_tiet_su_dung_dich_vu.ma_dat_phong
 LEFT JOIN dich_vu_di_kem ON chi_tiet_su_dung_dich_vu.ma_dich_vu = dich_vu_di_kem.ma_dich_vu
-GROUP BY dat_phong.ma_dat_phong, phong.loai_phong, khach_hang.ten_khach_hang,phong.gia_phong_1_gio
+GROUP BY dat_phong.ma_dat_phong, phong.loai_phong, khach_hang.ten_khach_hang, phong.gia_phong_1_gio
 ORDER BY dat_phong.ma_dat_phong
 
 
@@ -203,7 +204,52 @@ FROM dat_phong
 LEFT JOIN phong
 ON dat_phong.ma_phong = phong.ma_phong
 GROUP BY phong.ma_phong, dat_phong.trang_thai_dat, dat_phong.created_at, dat_phong.updated_at
-HAVING dat_phong.trang_thai_dat ILIKE '%Da dat%' AND COUNT(phong.ma_phong) > 2
+HAVING dat_phong.trang_thai_dat ILIKE '%Da dat%' AND COUNT(phong.ma_phong) >= 2
+
+/*
+Câu 4: Hiển thị TenKH của những khách hàng có tên bắt đầu là một trong 
+các ký tự “H”, “N”, “M” và có độ dài tối đa là 20 ký tự
+*/
+
+SELECT REVERSE(ten_khach_hang)
+FROM khach_hang
+WHERE ten_khach_hang LIKE 'N%'
+-- ORDER BY ma_khach_hang
+
+/*
+Câu 5: Hiển thị TenKH của tất cả các khách hàng có trong hệ thống,
+TenKH nào trùng nhau thì chỉ hiển thị một lần
+*/
+
+SELECT DISTINCT(khach_hang.ten_khach_hang)
+FROM khach_hang
+
+/*
+Câu 6: Hiển thị MaDV, TenDV, DonViTinh, DonGia của những dịch vụ đi kèm
+có DonViTinh là “lon” và có DonGia lớn hơn 10,000 VNĐ hoặc những dịch vụ đi kèm
+có DonViTinh là “Cai” và có DonGia nhỏ hơn 5,000 VNĐ
+*/
+
+SELECT dich_vu_di_kem.*
+FROM dich_vu_di_kem
+WHERE (don_vi_tinh ILIKE 'lon' AND don_gia >= 10000) OR (don_vi_tinh ILIKE 'cai' AND don_gia <= 5000)
+
+/*
+Câu 7: Hiển thị MaDatPhong, MaPhong, LoaiPhong, SoKhachToiDa, GiaPhong, MaKH, TenKH, SoDT, NgayDat,
+GioBatDau, GioKetThuc, MaDichVu, SoLuong, DonGia của những đơn đặt phòng có năm đặt phòng
+là “2016”, “2017” và đặt những phòng có giá phòng > 50,000 VNĐ/ 1 giờ
+*/
+
+SELECT dat_phong.ma_dat_phong, dat_phong.ma_phong, phong.loai_phong, phong.so_khach_toi_da,
+phong.gia_phong_1_gio, dat_phong.ma_khach_hang, khach_hang.ten_khach_hang, khach_hang.so_dien_thoai,
+dat_phong.ngay_dat, dat_phong.gio_bat_dau, dat_phong.gio_ket_thuc,
+chi_tiet_su_dung_dich_vu.ma_dich_vu, chi_tiet_su_dung_dich_vu.so_luong, dich_vu_di_kem.don_gia
+FROM dat_phong
+LEFT JOIN phong ON dat_phong.ma_phong = phong.ma_phong
+LEFT JOIN khach_hang ON dat_phong.ma_khach_hang = khach_hang.ma_khach_hang
+LEFT JOIN chi_tiet_su_dung_dich_vu ON dat_phong.ma_dat_phong = chi_tiet_su_dung_dich_vu.ma_dat_phong
+LEFT JOIN dich_vu_di_kem ON chi_tiet_su_dung_dich_vu.ma_dich_vu = dich_vu_di_kem.ma_dich_vu
+WHERE (ngay_dat ILIKE '%2017' OR ngay_dat ILIKE '%2016') AND (gia_phong_1_gio >= 50000)
 
 
 
