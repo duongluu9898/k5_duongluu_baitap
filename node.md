@@ -1,4 +1,4 @@
-# database 
+# database  '12345678' password
 - cơ sở dữ liệu giống như 1 kho lưu trữ: phi qua hệ và quan hệ 
 
 # ngôn ngữ truy vấn SQL: quan hệ

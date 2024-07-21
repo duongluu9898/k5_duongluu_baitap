@@ -15,6 +15,38 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.phong
     OWNER to postgres;
 
+-- tạo bảng khach_hang 
+CREATE TABLE IF NOT EXISTS public.khach_hang
+(
+    ma_khach_hang character varying COLLATE pg_catalog."default" NOT NULL,
+    ten_khach_hang character varying COLLATE pg_catalog."default",
+    dia_chi character varying COLLATE pg_catalog."default",
+    so_dien_thoai character varying COLLATE pg_catalog."default",
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT khach_hang_pkey PRIMARY KEY (ma_khach_hang)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.khach_hang
+    OWNER to postgres;
+
+-- tạo bảng dich_vu_di_kem
+CREATE TABLE IF NOT EXISTS public.dich_vu_di_kem
+(
+    ma_dich_vu character varying COLLATE pg_catalog."default" NOT NULL,
+    ten_dich_vu character varying COLLATE pg_catalog."default",
+    don_vi_tinh character varying COLLATE pg_catalog."default",
+    don_gia integer,
+    CONSTRAINT dich_vu_di_kem_pkey PRIMARY KEY (ma_dich_vu)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.dich_vu_di_kem
+    OWNER to postgres;
+
 -- Tạo bảng dat_phong
 CREATE TABLE IF NOT EXISTS public.dat_phong
 (
@@ -69,37 +101,6 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.chi_tiet_su_dung_dich_vu
     OWNER to postgres;
 
--- tạo bảng dich_vu_di_kem
-CREATE TABLE IF NOT EXISTS public.dich_vu_di_kem
-(
-    ma_dich_vu character varying COLLATE pg_catalog."default" NOT NULL,
-    ten_dich_vu character varying COLLATE pg_catalog."default",
-    don_vi_tinh character varying COLLATE pg_catalog."default",
-    don_gia integer,
-    CONSTRAINT dich_vu_di_kem_pkey PRIMARY KEY (ma_dich_vu)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.dich_vu_di_kem
-    OWNER to postgres;
-
--- tạo bảng khach_hang 
-CREATE TABLE IF NOT EXISTS public.khach_hang
-(
-    ma_khach_hang character varying COLLATE pg_catalog."default" NOT NULL,
-    ten_khach_hang character varying COLLATE pg_catalog."default",
-    dia_chi character varying COLLATE pg_catalog."default",
-    so_dien_thoai character varying COLLATE pg_catalog."default",
-    created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT khach_hang_pkey PRIMARY KEY (ma_khach_hang)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.khach_hang
-    OWNER to postgres;
 
 
 -- THÊM DỮ LIỆU VÀO CÁC BẢNG
@@ -156,33 +157,25 @@ TongTienSuDungDichVu = SoLuong * DonGia
 TongTienThanhToan = TongTienHat + sum (TongTienSuDungDichVu)
 */
 	
-SELECT dat_phong.ma_phong, dat_phong.ngay_dat,
-dat_phong.gio_bat_dau, dat_phong.gio_ket_thuc,
-phong.loai_phong, phong.gia_phong_1_gio,
-khach_hang.ten_khach_hang,
-COUNT(dat_phong.ma_dat_phong) AS so_lan_su_dung_dich_vu,
-ROUND(
-	(phong.gia_phong_1_gio * 
+SELECT dat_phong.ma_dat_phong, dat_phong.ma_phong, phong.loai_phong, phong.gia_phong_1_gio,
+khach_hang.ten_khach_hang, dat_phong.ngay_dat, COUNT(dat_phong.ma_dat_phong) AS lap,
+ROUND((phong.gia_phong_1_gio * 
 	SUM((EXTRACT(HOUR FROM(dat_phong.gio_ket_thuc) )* 60 + 
 	EXTRACT(MINUTE FROM(dat_phong.gio_ket_thuc) )- 
 	EXTRACT(HOUR FROM(dat_phong.gio_bat_dau)) * 60 - 
-	EXTRACT(MINUTE FROM(dat_phong.gio_bat_dau)))  / 60)
-	), 0
-) 
-AS tong_tien_hat
+	EXTRACT(MINUTE FROM(dat_phong.gio_bat_dau)))  / 60 )), 0
+) AS tong_tien_hat,
+(CASE WHEN SUM(so_luong * don_gia) IS null THEN 0
+    ELSE SUM(so_luong * don_gia ) END) AS tong_tien_su_dung_dich
 FROM dat_phong
-LEFT JOIN phong
-ON dat_phong.ma_phong = phong.ma_phong
-LEFT JOIN khach_hang
-ON dat_phong.ma_khach_hang = khach_hang.ma_khach_hang
-LEFT JOIN chi_tiet_su_dung_dich_vu
-ON dat_phong.ma_dat_phong = chi_tiet_su_dung_dich_vu.ma_dat_phong
-LEFT JOIN dich_vu_di_kem
-ON chi_tiet_su_dung_dich_vu.ma_dich_vu = dich_vu_di_kem.ma_dich_vu
-GROUP BY dat_phong.ma_dat_phong, phong.loai_phong,
-phong.gia_phong_1_gio, khach_hang.ten_khach_hang
+LEFT JOIN phong ON dat_phong.ma_phong = phong.ma_phong
+LEFT JOIN khach_hang ON dat_phong.ma_khach_hang = khach_hang.ma_khach_hang
+LEFT JOIN chi_tiet_su_dung_dich_vu ON dat_phong.ma_dat_phong = chi_tiet_su_dung_dich_vu.ma_dat_phong
+LEFT JOIN dich_vu_di_kem ON chi_tiet_su_dung_dich_vu.ma_dich_vu = dich_vu_di_kem.ma_dich_vu
+GROUP BY dat_phong.ma_dat_phong, phong.loai_phong, khach_hang.ten_khach_hang,phong.gia_phong_1_gio
+ORDER BY dat_phong.ma_dat_phong
 
--- mình chưa hoàn thành phần tính: TongTienSuDungDichVu và TongTienThanhToan
+
 /*
 Câu 2: Hiển thị MaKH, TenKH, DiaChi, SoDT
 của những khách hàng đã từng đặt phòng karaoke có địa chỉ ở “Hoa xuan”
